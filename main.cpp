@@ -39,10 +39,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 
 	MyMatrix4x4 originMatrix = MyMatrix4x4::MakeAffinMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
 	
-	MyVector3 controlPoints[3] = {
+	MyVector3 controlPoints[4] = {
 		{-0.8f,0.58f,1.0f},
 		{1.76f,1.0f,-0.3f},
-		{0.94f,-0.7f,2.3f}
+		{0.94f,-0.7f,2.3f},
+		{-0.53f,-0.26f,-0.15f}
 	};
 
 	MyMatrix4x4 projectionMatrix = MyMatrix4x4::MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
@@ -66,6 +67,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 		ImGui::DragFloat3("p0", &controlPoints[0].x, 0.01f);
 		ImGui::DragFloat3("p1", &controlPoints[1].x, 0.01f);
 		ImGui::DragFloat3("p2", &controlPoints[2].x, 0.01f);
+		ImGui::DragFloat3("p3", &controlPoints[3].x, 0.01f);
 		ImGui::End();
 
 		
@@ -73,8 +75,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 			
 			controlPoints[0] = { -0.8f,0.58f,1.0f };
 			controlPoints[1] = { 1.76f,1.0f,-0.3f };
-			controlPoints[1] = { 0.94f,-0.7f,2.3f };
-
+			controlPoints[2] = { 0.94f,-0.7f,2.3f };
+			controlPoints[3] = { -0.53f, -0.26f, -0.15f };
 			camera->Initialize({ 0.0f,1.9f,-6.49f }, { 0.26f,0.0f,0.0f });
 		}
 
@@ -84,10 +86,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 		MyMatrix4x4 viewMatrix = MyMatrix4x4::Inverse(cameraMatrix);
 		MyMatrix4x4 viewProjectionMatrix = MyMatrix4x4::Multiply(viewMatrix, projectionMatrix);
 
-		Sphere sphere[3] = {
+		Sphere sphere[4] = {
 			{controlPoints[0],{},0.01f},
 			{controlPoints[1],{},0.01f},
-			{controlPoints[2],{},0.01f}
+			{controlPoints[2],{},0.01f},
+			{controlPoints[3],{},0.01f}
 		};
 
 		///
@@ -102,12 +105,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 
 		Grid::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			sphere[i].Draw(viewProjectionMatrix, viewportMatrix, 0x000000FF);
 		}
 
-		Draw::DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
-
+	
+		Draw::DrawCatmullRom(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
 		///
 		/// ↑描画処理ここまで
 		///
